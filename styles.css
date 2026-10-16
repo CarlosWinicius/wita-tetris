@@ -2,3 +2,4 @@
 .touch button{min-height:48px;border-radius:7px;box-shadow:0 3px #080a12;font-size:22px;touch-action:manipulation}.touch button:active{transform:translateY(2px);box-shadow:none}.layout aside #pause{width:100%;margin-top:10px;background:#283047;color:var(--ink);box-shadow:none}.layout aside #message{min-height:20px;margin:10px 0;color:var(--cyan);font-size:10px}
 .touch{grid-template-columns:repeat(5,1fr)}.touch button:last-child{grid-column:span 1;font-size:10px}.touch button{font-size:20px}@media(max-width:420px){.touch{gap:4px}.touch button{padding:0 2px;font-size:17px}.touch button:last-child{font-size:8px}}
 .next i{display:block}
+.app header span{display:flex;align-items:center;gap:10px}.app header span::before{content:"";display:block;width:92px;height:28px;background:url("./logo.svg") center/contain no-repeat}
