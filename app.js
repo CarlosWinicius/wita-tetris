@@ -1,15 +1,16 @@
+const adsense=document.createElement("script");adsense.async=true;adsense.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3634602303672600";adsense.crossOrigin="anonymous";document.head.append(adsense);
 const W=10,H=20,shapes=[[[1,1,1,1]],[[1,1],[1,1]],[[0,1,0],[1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1,0],[0,1,1]],[[0,1,1],[1,1,0]]];
 let board=[],piece,nextPiece,x,y,score=0,lines=0,level=1,timer=null,over=false,paused=false;
 const el=id=>document.getElementById(id),boardEl=el("board");
 const empty=()=>Array.from({length:H},()=>Array(W).fill(-1));
 const random=()=>Math.floor(Math.random()*shapes.length);
 const cloneShape=(index)=>{const p=shapes[index].map(row=>[...row]);p.color=index;return p};
-const rotated=shape=>shape[0].map((_,i)=>shape.map(row=>row[i]).reverse());
+const rotated=shape=>{const next=shape[0].map((_,i)=>shape.map(row=>row[i]).reverse());next.color=shape.color;return next};
 function hit(px=x,py=y,ps=piece){return ps.some((row,dy)=>row.some((value,dx)=>value&&((px+dx<0)||(px+dx>=W)||(py+dy>=H)||(py+dy>=0&&board[py+dy][px+dx]>=0))))}
 function draw(){boardEl.innerHTML="";for(let r=0;r<H;r++)for(let c=0;c<W;c++){const cell=document.createElement("i");cell.className="cell";if(board[r][c]>=0)cell.classList.add("filled",`c${board[r][c]}`);if(piece)piece.forEach((row,dy)=>row.forEach((value,dx)=>{if(value&&r===y+dy&&c===x+dx)cell.classList.add("filled",`c${piece.color}`)}));boardEl.append(cell)}}
 function updateStats(){el("score").textContent=score;el("lines").textContent=lines;el("level").textContent=level}
 function spawn(){const index=nextPiece===undefined?random():nextPiece;piece=cloneShape(index);nextPiece=random();x=3;y=0;if(hit()){gameOver();return}draw()}
-function lock(){piece.forEach((row,dy)=>row.forEach((value,dx)=>{if(value&&y+dy>=0)board[y+dy][x+dx]=piece.color}));let cleared=0;board=board.filter(row=>{if(row.every(value=>value>=0)){cleared++;return false}return true});while(board.length<H)board.unshift(Array(W).fill(-1));if(cleared){lines+=cleared;score+=([0,100,300,500,800][cleared]||800)*level;level=Math.floor(lines/10)+1;restartTimer()}updateStats();spawn()}
+function lock(){piece.forEach((row,dy)=>row.forEach((value,dx)=>{if(value&&y+dy>=0)board[y+dy][x+dx]=piece.color}));let cleared=0;board=board.filter(row=>{if(row.every(value=>Number.isInteger(value)&&value>=0)){cleared++;return false}return true});while(board.length<H)board.unshift(Array(W).fill(-1));if(cleared){lines+=cleared;score+=([0,100,300,500,800][cleared]||800)*level;level=Math.floor(lines/10)+1;el("message").textContent=cleared===1?"LINHA LIMPA!":`${cleared} LINHAS LIMPAS!`;restartTimer()}updateStats();spawn()}
 function drop(){if(over||paused)return;if(!hit(x,y+1))y++;else lock();draw()}
 function move(dx){if(!over&&!paused&&!hit(x+dx,y))x+=dx;draw()}
 function rotatePiece(){if(over||paused)return;const next=rotated(piece);if(!hit(x,y,next))piece=next;draw()}
